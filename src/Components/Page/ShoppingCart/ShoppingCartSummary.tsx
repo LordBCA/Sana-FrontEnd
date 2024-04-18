@@ -5,6 +5,7 @@ import { RootState } from '../../../Storage/Redux/store';
 import { toastNotify } from '../../../Helper';
 import { useCreateOrderMutation } from "../../../Apis/orderApi";
 import { resetShoppingCart } from '../../../Storage/Redux/shoppingCartSlice';
+import { MiniLoader } from '../Common';
 
 function ShoppingCartSummary() {
   const dispatch = useDispatch();
@@ -12,11 +13,17 @@ function ShoppingCartSummary() {
   const [createOrder] = useCreateOrderMutation();
   const shoppingCartFromStore = useSelector((state: RootState) => state.shoppingCartStore.shoppingCart);
 
-  // Calculate the total quantity
-  const totalQuantity = shoppingCartFromStore?.products.reduce((total, item) => total + item.quantity, 0);
+  // Calculate the totals
+  let totalItems = 0;
+  let totalPrice = 0;
+  let totalOrder = 0;
 
-  // Calculate the total price considering quantity
-  const totalPrice = shoppingCartFromStore?.products.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+  shoppingCartFromStore?.products.map((cartItem: shoppingCartItemModel) => {
+    totalItems += cartItem.quantity ?? 0;
+    totalPrice += ((cartItem?.price ?? 0) * (cartItem.quantity ?? 0));
+    totalOrder += ((cartItem?.price ?? 0) * (cartItem.quantity ?? 0));
+    return null;
+  });
 
   const handleCreateOrder = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,10 +53,10 @@ function ShoppingCartSummary() {
       <h3 className="mt-4 mb-4">Shopping Cart Details</h3>
       <div className="row">
         <div className="col-6 text-left">
-          <p>Items ({totalQuantity} units)</p>
+          <p>Items ({totalItems} units)</p>
         </div>
         <div className="col-6 text-right">
-          <p>${totalPrice}</p>
+          <p>${totalPrice.toFixed(2)}</p>
         </div>
       </div>      
       <div className="row">
@@ -62,16 +69,24 @@ function ShoppingCartSummary() {
           <p>Total</p>
         </div>
         <div className="col-6 text-right">
-          <p>${}</p>
+          <p>${totalOrder.toFixed(2)}</p>
         </div>
       </div>
       <div className="row mt-4">
         <div className="col">
         <form onSubmit={handleCreateOrder}>
-          <button className="btn btn-primary btn-block" 
-            style={{ width: '80%' }}            
-            >Process Order &gt;
-          </button>
+          {isCreatingOrder ? (
+            <button disabled className="btn btn-primary btn-block" 
+              style={{ width: '80%' }}            
+              >
+                <MiniLoader />
+            </button>
+            ) : (
+            <button disabled={!(totalPrice > 0)} className="btn btn-primary btn-block" 
+              style={{ width: '80%' }}            
+              >Process Order &gt;
+            </button>
+            )}
           </form>
         </div>
       </div>
