@@ -77,7 +77,7 @@ function ShoppingCartItemCard(props : Props) {
       </div>
     </div>
     <div className="col-2">${props.shoppingCartItem.price}</div>
-    <div className="col-2">${props.shoppingCartItem.price  * props.shoppingCartItem.quantity}</div>
+    <div className="col-2">${(props.shoppingCartItem.price  * props.shoppingCartItem.quantity).toFixed(2)}</div>
   </div>
   <div className="row">
   <div className="col-12">
