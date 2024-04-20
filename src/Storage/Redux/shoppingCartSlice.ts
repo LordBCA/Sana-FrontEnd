@@ -19,15 +19,7 @@ const shoppingCartSlice = createSlice({
       if (!state.shoppingCart) {
         state.shoppingCart = {
           customerId: 1, // Sample customerId
-          products: [{
-            productItemId,
-            quantity,
-            price,
-            title,
-            code, 
-            stock,
-            image
-          }],
+          products: [action.payload]          
         };
       } else {
         const existingProductIndex = state.shoppingCart.products.findIndex(product => product.productItemId === productItemId);
@@ -44,15 +36,7 @@ const shoppingCartSlice = createSlice({
             return product;
           });          
         } else {
-          state.shoppingCart.products.push({
-            productItemId,
-            quantity,
-            price,
-            title,
-            code, 
-            stock,
-            image
-          });
+          state.shoppingCart.products.push(action.payload);          
         }
       }
     },
